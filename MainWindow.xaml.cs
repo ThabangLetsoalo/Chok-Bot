@@ -29,42 +29,72 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+            InitializeChat();
+        }
+        private void InitializeChat()
+        {
+            //utilities.Greeting();
             ChatListBox.Items.Add("🤖 Hello! Welcome to CyberBot.");
             ChatListBox.Items.Add("🤖 Please enter your name:");
-
-
         }
-
         private void subBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(UserInput.Text))
-            {
-                MessageBox.Show("🤖 Please enter a valid name.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+            if (!IsUserInputValid()) return;
 
             if (string.IsNullOrEmpty(userName))
             {
-                userName = UserInput.Text.Trim();
-                ChatListBox.Items.Add($"👤 {userName}");
-                ChatListBox.Items.Add($"🤖 Nice to meet you {userName}. How are you feeling today?");
-                UserInput.Clear();
-                UserInput.IsEnabled = true;
+                //SetUserName();
+                Task();
                 return;
             }
 
-            responseText = UserInput.Text.Trim().ToLower();
-            logic.replie = responseText;
-            UserInput.Clear();
-            //move this to its own method in the main function class and add a method where i can ask the bot how it is
-            logic.HUDResponse();
-            //ChatListBox.Items.Add($"👤 {logic.Answer}");
-            UserInput.Clear();
-            logic.Response();
-            ChatListBox.Items.Add("🤖 What do you want to know about cyber security?");
-            responseText = UserInput.Text.Trim().ToLower();
-            logic.Answer = responseText; 
+            //HandleConversation();
+            
+        }
 
+        private bool IsUserInputValid()
+        {
+            if (string.IsNullOrWhiteSpace(UserInput.Text))
+            {
+                MessageBox.Show("🤖 Please enter something.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            return true;
+        }
+
+        private void SetUserName()
+        {
+            userName = UserInput.Text.Trim();
+            ChatListBox.Items.Add($"👤 {userName}");
+            ChatListBox.Items.Add($"🤖 Nice to meet you {userName}. What would you like to talk about?");
+            UserInput.Clear();
+        }
+
+        private void HandleConversation()
+        {
+            responseText = UserInput.Text.Trim();
+            ChatListBox.Items.Add($"👤 {responseText}");
+
+            logic.Answer = responseText.ToLower();
+            logic.Response();
+
+            ChatListBox.Items.Add($"🤖 {logic.botRes}");
+            ChatListBox.Items.Add("🤖 What do you want to know about cyber security?");
+
+            UserInput.Clear();
+        }
+
+        private void Task()
+        {
+            TaskItem task = new TaskItem
+            {
+                Title = "Sample Task",
+                Description = "This is a sample task description.",
+                ReminderDate = DateTime.Now.AddDays(1),
+                IsCompleted = false
+            };
+            // Here you can add logic to display or manage the task as needed
+            MessageBox.Show($"Task Created: {task.Title}\nDescription: {task.Description}\nReminder: {task.ReminderDate}", "Task Created", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
