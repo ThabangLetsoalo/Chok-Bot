@@ -25,6 +25,10 @@ namespace WpfApp1
         private string userName;
         public string responseText;
 
+        public string Title;
+        public string Description;
+        public DateTime? ReminderDate;
+        public bool IsCompleted;
 
         public MainWindow()
         {
@@ -39,18 +43,25 @@ namespace WpfApp1
         }
         private void subBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsUserInputValid()) return;
+            if (!IsUserInputValid())
+                return;
 
             if (string.IsNullOrEmpty(userName))
             {
-                //SetUserName();
-                Task();
+                SetUserName();
                 return;
             }
 
-            //HandleConversation();
-            
+            if (UserInput.Text.Trim().ToLower() == "add task")
+            {
+                ProcessUserInput();
+            }
+            else
+            {
+                HandleConversation();
+            }
         }
+
 
         private bool IsUserInputValid()
         {
@@ -79,22 +90,63 @@ namespace WpfApp1
             logic.Response();
 
             ChatListBox.Items.Add($"🤖 {logic.botRes}");
-            ChatListBox.Items.Add("🤖 What do you want to know about cyber security?");
+            ChatListBox.Items.Add("🤖 What would you like to talk about?");
 
             UserInput.Clear();
         }
 
-        private void Task()
+        private int taskCreationStep = 0;
+        private TaskItem currentTaskItem = new TaskItem();
+
+        private void ProcessUserInput()
         {
-            TaskItem task = new TaskItem
+            string input = UserInput.Text.Trim();
+            ChatListBox.Items.Add($"👤 {input}");
+            UserInput.Clear();
+
+            switch (taskCreationStep)
             {
-                Title = "Sample Task",
-                Description = "This is a sample task description.",
-                ReminderDate = DateTime.Now.AddDays(1),
-                IsCompleted = false
-            };
-            // Here you can add logic to display or manage the task as needed
-            MessageBox.Show($"Task Created: {task.Title}\nDescription: {task.Description}\nReminder: {task.ReminderDate}", "Task Created", MessageBoxButton.OK, MessageBoxImage.Information);
+                case 0:
+                    ChatListBox.Items.Add("🤖 Please enter a title for the task:");
+                    taskCreationStep++;
+                    break;
+
+                case 1:
+                    currentTaskItem.Title = input;
+                    ChatListBox.Items.Add("🤖 Please enter a description for the task:");
+                    taskCreationStep++;
+                    break;
+
+                case 2:
+                    currentTaskItem.Description = input;
+                    ChatListBox.Items.Add("🤖 Please enter a reminder date (optional, format: yyyy-MM-dd):");
+                    taskCreationStep++;
+                    break;
+
+                case 3:
+                    if (DateTime.TryParse(input, out DateTime reminderDate))
+                    {
+                        currentTaskItem.ReminderDate = reminderDate;
+                        ChatListBox.Items.Add($"🤖 Reminder set for: {reminderDate.ToShortDateString()}");
+                    }
+                    else
+                    {
+                        currentTaskItem.ReminderDate = null;
+                        ChatListBox.Items.Add("🤖 No reminder date set.");
+                    }
+
+                    currentTaskItem.IsCompleted = false;
+                    taskCreationStep = 0;
+
+                    MessageBox.Show(
+                        $"Task Created: {currentTaskItem.Title}\nDescription: {currentTaskItem.Description}\nReminder: {currentTaskItem.ReminderDate}",
+                        "Task Created", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    currentTaskItem = new TaskItem(); // reset for next task
+                    break;
+            }
         }
+
+
     }
 }
