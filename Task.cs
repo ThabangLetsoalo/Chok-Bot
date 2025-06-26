@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace WpfApp1
 {
-    class Task
+    internal class Task
     {
+        public List<Task> taskList = [];
 
-        public class TaskItem
-        {
-            public string Title { get; set; }
-            public string Description { get; set; }
-            public DateTime? ReminderDate { get; set; }
-            public bool IsCompleted { get; set; }
-        }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime? ReminderDate { get; set; }
+        public bool IsCompleted { get; set; }
 
+        
     }
 }

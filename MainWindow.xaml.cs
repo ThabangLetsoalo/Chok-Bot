@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,7 +22,7 @@ namespace WpfApp1
     {
         MainLogic logic = new MainLogic();
         Utilities utilities = new Utilities();
-
+        Game game = new Game();
         private string userName;
         public string responseText;
 
@@ -29,6 +30,13 @@ namespace WpfApp1
         public string Description;
         public DateTime? ReminderDate;
         public bool IsCompleted;
+        private bool isCreatingTask = false;
+        //private int currentQuestionIndex = 0;
+        private bool isPlayingGame = false;
+        int gameStep = 0;
+        private bool isAnsweringQuestion = false;
+
+
 
         public MainWindow()
         {
@@ -51,16 +59,35 @@ namespace WpfApp1
                 SetUserName();
                 return;
             }
-
-            if (UserInput.Text.Trim().ToLower() == "add task")
+            if (isCreatingTask)
             {
                 ProcessUserInput();
+                return;
+            }
+
+            string input = UserInput.Text.Trim().ToLower();
+
+            if (isPlayingGame && isAnsweringQuestion)
+            {
+                HandleGameInput(input);
+                return;
+            }
+
+            if (input == "add task")
+            {
+                isCreatingTask = true;
+                ProcessUserInput();
+            }
+            else if (input == "play game")
+            {
+                StarGame();
             }
             else
             {
                 HandleConversation();
             }
         }
+
 
 
         private bool IsUserInputValid()
@@ -93,10 +120,11 @@ namespace WpfApp1
             ChatListBox.Items.Add("🤖 What would you like to talk about?");
 
             UserInput.Clear();
+            return;
         }
 
         private int taskCreationStep = 0;
-        private TaskItem currentTaskItem = new TaskItem();
+        private Task currentTaskItem = new Task();
 
         private void ProcessUserInput()
         {
@@ -142,9 +170,55 @@ namespace WpfApp1
                         $"Task Created: {currentTaskItem.Title}\nDescription: {currentTaskItem.Description}\nReminder: {currentTaskItem.ReminderDate}",
                         "Task Created", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    currentTaskItem = new TaskItem(); // reset for next task
+                    //currentTaskItem = new TaskItem(); // reset for next task
                     break;
             }
+            return;
+        }
+
+        private void StarGame()
+        {
+            isPlayingGame = true;
+            gameStep = 0;
+            game.score = 0;
+            AskNextQuestion();
+        }
+
+        private void AskNextQuestion()
+        {
+            if (gameStep >= game.questions.Count)
+            {
+                ChatListBox.Items.Add($"\n🎉 Game Over! Your score is {game.score}/{game.questions.Count}.");
+                isPlayingGame = false;
+                return;
+            }
+
+            var q = game.questions[gameStep];
+            ChatListBox.Items.Add($"\nQuestion {gameStep + 1}: {q.Text}");
+            ChatListBox.Items.Add(q.OptionA);
+            ChatListBox.Items.Add(q.OptionB);
+            ChatListBox.Items.Add(q.OptionC);
+            ChatListBox.Items.Add(q.OptionD);
+            isAnsweringQuestion = true;
+        }
+
+        private void HandleGameInput(string input)
+        {
+            var correctAnswer = game.questions[gameStep].CorrectAnswer.ToString().ToLower();
+
+            if (input == correctAnswer)
+            {
+                ChatListBox.Items.Add("✅ Correct!");
+                game.score++;
+            }
+            else
+            {
+                ChatListBox.Items.Add($"❌ Incorrect. Correct answer was '{correctAnswer}'.");
+            }
+
+            gameStep++;
+            isAnsweringQuestion = false;
+            AskNextQuestion();
         }
 
 

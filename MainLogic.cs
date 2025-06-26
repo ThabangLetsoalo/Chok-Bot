@@ -70,5 +70,6 @@ namespace WpfApp1
                 Answer = $" I didn't quite understand that. Could you rephrase?";
             }
         } 
+    
     }
 }
