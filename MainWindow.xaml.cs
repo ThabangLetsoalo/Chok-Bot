@@ -35,7 +35,7 @@ namespace WpfApp1
         private bool isPlayingGame = false;
         int gameStep = 0;
         private bool isAnsweringQuestion = false;
-
+        private bool isTaskListVisible = false;
 
 
         public MainWindow()
@@ -72,15 +72,30 @@ namespace WpfApp1
                 HandleGameInput(input);
                 return;
             }
+            if (isTaskListVisible)
+            {
+                ViewTasks();
+                return;
+            }
 
-            if (input == "add task")
+            if (input.Equals("add task")) 
             {
                 isCreatingTask = true;
                 ProcessUserInput();
             }
-            else if (input == "play game")
+            else if (input.Equals("play game"))
             {
                 StarGame();
+            }
+            //else if(input.Equals("view tasks") || input.Equals("view task"))
+            //{
+            //    isTaskListVisible = true;
+            //    ViewTasks();
+            //}
+            else if (input.Equals("exit") || input.Equals("quit"))
+            {
+                MessageBox.Show("🤖 Goodbye! Have a great day!", "Exit", MessageBoxButton.OK, MessageBoxImage.Information);
+                Application.Current.Shutdown();
             }
             else
             {
@@ -110,18 +125,42 @@ namespace WpfApp1
 
         private void HandleConversation()
         {
-            responseText = UserInput.Text.Trim();
-            ChatListBox.Items.Add($"👤 {responseText}");
+            try
+            {
+                responseText = UserInput.Text?.Trim();
 
-            logic.Answer = responseText.ToLower();
-            logic.Response();
+                if (string.IsNullOrWhiteSpace(responseText))
+                {
+                    ChatListBox.Items.Add("🤖 Please enter a message before submitting.");
+                    return;
+                }
 
-            ChatListBox.Items.Add($"🤖 {logic.botRes}");
-            ChatListBox.Items.Add("🤖 What would you like to talk about?");
+                ChatListBox.Items.Add($"👤 {responseText}");
 
-            UserInput.Clear();
-            return;
+                logic.Answer = responseText.ToLower();
+                logic.Response();
+
+                if (!string.IsNullOrWhiteSpace(logic.botRes))
+                {
+                    ChatListBox.Items.Add($"🤖 {logic.botRes}");
+                }
+                else
+                {
+                    ChatListBox.Items.Add("🤖 I'm not sure how to respond to that.");
+                }
+
+                ChatListBox.Items.Add("🤖 What would you like to talk about?");
+            }
+            catch (Exception ex)
+            {
+                ChatListBox.Items.Add($"🤖 Oops! Something went wrong: {ex.Message}");
+            }
+            finally
+            {
+                UserInput.Clear();
+            }
         }
+
 
         private int taskCreationStep = 0;
         private Task currentTaskItem = new Task();
@@ -166,6 +205,7 @@ namespace WpfApp1
                     currentTaskItem.IsCompleted = false;
                     taskCreationStep = 0;
 
+                    currentTaskItem.AddToTaskList();
                     MessageBox.Show(
                         $"Task Created: {currentTaskItem.Title}\nDescription: {currentTaskItem.Description}\nReminder: {currentTaskItem.ReminderDate}",
                         "Task Created", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -174,6 +214,29 @@ namespace WpfApp1
                     break;
             }
             return;
+        }
+
+        private void ViewTasks()
+        {
+            if (taskList.Count == 0)
+            {
+                ChatListBox.Items.Add("🤖 You have no tasks.");
+                return;
+            }
+
+            for (int i = 0; i < taskList.Count; i++)
+            {
+                var task = taskList[i];
+                ChatListBox.Items.Add(
+                    $"📌 Task {i + 1}:\n" +
+                    $"Title: {task.Title}\n" +
+                    $"Description: {task.Description}\n" +
+                    $"Reminder: {(task.ReminderDate.HasValue ? task.ReminderDate.Value.ToShortDateString() : "None")}\n" +
+                    $"Completed: {(task.IsCompleted ? "✅ Yes" : "❌ No")}\n");
+            }
+
+            ChatListBox.Items.Add("🤖 To delete a task, type: delete [task number]");
+            ChatListBox.Items.Add("🤖 To mark a task complete/incomplete, type: toggle [task number]");
         }
 
         private void StarGame()
