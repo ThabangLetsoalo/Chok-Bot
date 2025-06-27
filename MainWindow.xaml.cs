@@ -23,6 +23,8 @@ namespace WpfApp1
         MainLogic logic = new MainLogic();
         Utilities utilities = new Utilities();
         Game game = new Game();
+        private ActivityLog logger = new ActivityLog();
+
         private string userName;
         public string responseText;
 
@@ -97,6 +99,14 @@ namespace WpfApp1
                 MessageBox.Show("🤖 Goodbye! Have a great day!", "Exit", MessageBoxButton.OK, MessageBoxImage.Information);
                 Application.Current.Shutdown();
             }
+            else if (input.Equals("view log"))
+            {
+                foreach (var entry in logger.GetLogs())
+                {
+                    ChatListBox.Items.Add($"🗒️ {entry}");
+                }
+            }
+
             else
             {
                 HandleConversation();
@@ -119,6 +129,7 @@ namespace WpfApp1
         {
             userName = UserInput.Text.Trim();
             ChatListBox.Items.Add($"👤 {userName}");
+            logger.Log($"User '{userName}' has entered their name.");
             ChatListBox.Items.Add($"🤖 Nice to meet you {userName}. What would you like to talk about?");
             UserInput.Clear();
         }
@@ -209,6 +220,7 @@ namespace WpfApp1
                     MessageBox.Show(
                         $"Task Created: {currentTaskItem.Title}\nDescription: {currentTaskItem.Description}\nReminder: {currentTaskItem.ReminderDate}",
                         "Task Created", MessageBoxButton.OK, MessageBoxImage.Information);
+                    logger.Log($"Task created: {currentTaskItem.Title} | Description: {currentTaskItem.Description}");
 
                     //currentTaskItem = new TaskItem(); // reset for next task
                     break;
@@ -245,6 +257,8 @@ namespace WpfApp1
             gameStep = 0;
             game.score = 0;
             AskNextQuestion();
+            logger.Log("Cybersecurity quiz started.");
+
         }
 
         private void AskNextQuestion()

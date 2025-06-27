@@ -11,16 +11,17 @@ namespace WpfApp1
         public int score = 0;
         public List<Question> questions = new List<Question>
             {
-                new Question("What is the capital of France?", "a) London", "b) Berlin", "c) Paris", "d) Madrid", 'c'),
-                new Question("Which planet is known as the Red Planet?", "a) Earth", "b) Mars", "c) Jupiter", "d) Venus", 'b'),
-                new Question("What is the largest ocean on Earth?", "a) Atlantic", "b) Indian", "c) Pacific", "d) Arctic", 'c'),
-                new Question("What is the chemical symbol for water?", "a) H2O", "b) CO2", "c) O2", "d) HO", 'a'),
-                new Question("Who wrote 'Romeo and Juliet'?", "a) Dickens", "b) Shakespeare", "c) Orwell", "d) Austen", 'b'),
-                new Question("Which continent is Egypt in?", "a) Asia", "b) Europe", "c) Africa", "d) South America", 'c'),
-                new Question("What gas do plants absorb?", "a) Oxygen", "b) Nitrogen", "c) Carbon Dioxide", "d) Hydrogen", 'c'),
-                new Question("How many legs does a spider have?", "a) 6", "b) 8", "c) 10", "d) 4", 'b'),
-                new Question("Which is the smallest prime number?", "a) 1", "b) 2", "c) 3", "d) 0", 'b'),
-                new Question("What color do you get by mixing red and blue?", "a) Purple", "b) Green", "c) Yellow", "d) Orange", 'a')
+                new Question("What is the recommended minimum length for a strong password?", "a) 4 characters", "b) 6 characters", "c) 8 characters", "d) 10 characters", 'c'),
+                new Question("Which of these is a common sign of a phishing email?", "a) Personalized greeting", "b) Spelling mistakes", "c) Sent from your own email", "d) No links included", 'b'),
+                new Question("What should you do if you suspect an email is a phishing attempt?", "a) Click the link to verify", "b) Reply to ask", "c) Delete it or report it", "d) Forward it to friends", 'c'),
+                new Question("What does 2FA stand for in cybersecurity?", "a) Two-Factor Authentication", "b) File Access Control", "c) Fast Access", "d) Firewall Access", 'a'),
+                new Question("Which of the following is considered *not* secure?", "a) Using a password manager", "b) Reusing passwords across sites", "c) Changing passwords regularly", "d) Using complex passwords", 'b'),
+                new Question("Which type of malware demands payment to restore your files?", "a) Virus", "b) Worm", "c) Ransomware", "d) Spyware", 'c'),
+                new Question("What is the purpose of a firewall?", "a) To cool the CPU", "b) To block unauthorized access", "c) To store passwords", "d) To clean the screen", 'b'),
+                new Question("Which action helps prevent phishing attacks?", "a) Clicking unknown links", "b) Ignoring browser warnings", "c) Hovering over links before clicking", "d) Downloading every attachment", 'c'),
+                new Question("Which of these is a strong password example?", "a) 12345678", "b) password1", "c) !Q2w#e4R", "d) abcdefg", 'c'),
+                new Question("Why should public Wi-Fi be used cautiously?", "a) It's slow", "b) It's expensive", "c) It's insecure", "d) It's private", 'c')
+
             };
         
     }
